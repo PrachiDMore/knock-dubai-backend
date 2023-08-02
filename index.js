@@ -12,7 +12,7 @@ const jwt = require("jsonwebtoken");
 const ContactModel = require("./Schemas/Contact");
 
 app.use(cors({
-	origin: ["http://localhost:3000", "http://localhost:5500"]
+	origin: ["http://localhost:3000", "http://localhost:5500", "https://knock-dubai-admin.vercel.app"]
 }))
 
 
