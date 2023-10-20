@@ -31,6 +31,9 @@ const BlogSchema = new mongoose.Schema({
 	content: {
 		type: String,
 		required: true
+	},
+	city: {
+		type: String,		
 	}
 }, { timestamps: true })
 

@@ -10,6 +10,7 @@ app.use(express.json());
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const ContactModel = require("./Schemas/Contact");
+const {localityModel} = require("./Schemas/Locality");
 
 app.use(cors({
 	origin: ["http://localhost:3000", "http://localhost:5500", 'https://knock-dubai-admin.vercel.app', "https://knock-dubai-frontend.vercel.app"]
@@ -193,6 +194,109 @@ app.delete("/delete/:_id", async (req, res) => {
 			error: true,
 			message: error.message,
 		})
+	}
+})
+
+// Add Locality
+app.post("/add-area", async(req, res) => {
+	const data = req.body;
+	try {
+		const findArea = await localityModel.find({ 
+			$and:[{ country: data.country }, 
+			{ city: data.city }] 
+		});
+
+		if(findArea.length == 0) {
+			const insertQuery = await new localityModel(data).save();
+	
+			if(insertQuery) {
+				res.json({
+					error: false,
+					message: "Data Inserted",
+					response: insertQuery,
+				});
+			}
+			else {
+				res.json({
+					error: true,
+					message: "Some Issue Occurs",
+				});
+			}
+		}
+		else {
+			res.json({
+				error: true,
+				message: "Data Already Exists",
+			});
+		}
+	}
+	catch(error) {
+		res.json({
+			error: true,
+			message: error.message,
+		})
+	}
+})
+
+// get All Locality
+app.get("/get-locality", async(req, res) => {
+	try {
+		const getLocality = await localityModel.distinct('city');
+
+		if(getLocality.length != 0) {
+			res.json({ 
+				error: false,
+				message: "Data Fetched",
+				response: getLocality,
+			})
+		}
+		else {
+			res.json({
+				error: true,
+				message: "No Data Found"
+			})
+		}
+	}
+	catch(error) {
+		res.json({
+			error: true,
+			message: error.message,
+		})
+	}
+})
+
+// Fetch Blogs by Location
+app.post("/blogs-by-location", async(req, res) => {
+	try {
+		const getLocation = await localityModel.find({ city: req.body.city });
+		if(getLocation != 0) {
+			const getBlogs =  await BlogModel.find({ city: req.body.city });
+			if(getBlogs.length != 0) {
+				res.json({
+					error: false,
+					message: "Data Fetched",
+					response: getBlogs,
+				});
+			}
+			else {
+				res.json({
+					error: true,
+					message: "No Data Found",
+				});
+			}
+		}
+		else {
+			res.json({
+				error: true,
+				message: "Location Does Not Exists",
+			})
+		}
+	}
+	catch(error) {
+		res.json({
+			error: true,
+			message: error.message,
+		});
 	}
 })
 
