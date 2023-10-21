@@ -9,6 +9,7 @@ const AdminModel = require("./Schemas/Admin");
 app.use(express.json());
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
+const nodemailer = require('nodemailer');
 const ContactModel = require("./Schemas/Contact");
 const {localityModel} = require("./Schemas/Locality");
 
@@ -76,39 +77,39 @@ app.post("/create", async (req, res) => {
 	}
 })
 
-app.post("/contact", async (req, res) => {
-	try {
-		const newContact = await ContactModel.create(req.body);
-		res.json({
-			error: false,
-			message: "Successful!",
-			contact: newContact
-		})
-	} catch (error) {
-		res.json({
-			error: true,
-			message: error.message,
-			contact: undefined
-		})
-	}
-})
+// app.post("/contact", async (req, res) => {
+// 	try {
+// 		const newContact = await ContactModel.create(req.body);
+// 		res.json({
+// 			error: false,
+// 			message: "Successful!",
+// 			contact: newContact
+// 		})
+// 	} catch (error) {
+// 		res.json({
+// 			error: true,
+// 			message: error.message,
+// 			contact: undefined
+// 		})
+// 	}
+// })
 
-app.get("/contact", async (req, res) => {
-	try {
-		const contacts = await ContactModel.find({});
-		res.json({
-			error: false,
-			message: "Successful!",
-			contacts: contacts
-		})
-	} catch (error) {
-		res.json({
-			error: true,
-			message: error.message,
-			contacts: undefined
-		})
-	}
-})
+// app.get("/contact", async (req, res) => {
+// 	try {
+// 		const contacts = await ContactModel.find({});
+// 		res.json({
+// 			error: false,
+// 			message: "Successful!",
+// 			contacts: contacts
+// 		})
+// 	} catch (error) {
+// 		res.json({
+// 			error: true,
+// 			message: error.message,
+// 			contacts: undefined
+// 		})
+// 	}
+// })
 
 app.post("/admin/signin", async (req, res) => {
 	try {
@@ -297,6 +298,73 @@ app.post("/blogs-by-location", async(req, res) => {
 			error: true,
 			message: error.message,
 		});
+	}
+})
+
+// app.post("/contact", async (req, res) => {
+// 	try {
+// 		const newContact = await ContactModel.create(req.body);
+// 		res.json({
+// 			error: false,
+// 			message: "Successful!",
+// 			contact: newContact
+// 		})
+// 	} catch (error) {
+// 		res.json({
+// 			error: true,
+// 			message: error.message,
+// 			contact: undefined
+// 		})
+// 	}
+// })
+
+// Contact Us Form
+app.post("/contact-us", async(req, res) => {
+	const data = req.body;
+	try {		
+		const transporter = nodemailer.createTransport({
+			service: 'Gmail',
+			auth: {
+			  user: process.env.ADMIN_EMAIL,
+			  pass: process.env.EMAIL_PASSWORD, 
+			},
+			authMethod: 'PLAIN',
+		});
+	
+		// Composing Email
+		const mailOptions = {
+			from: process.env.ADMIN_EMAIL,
+			to: process.env.ADMIN_EMAIL,
+			subject: `Query related to ${ data.queryType }`,
+			text: data.message,
+		};
+
+		// Sending the email
+		const sendEmail = transporter.sendMail(mailOptions);
+
+		if(sendEmail) {
+			
+			const query = await ContactModel(data).save();
+			if(query) {
+				res.json({
+					error: false,
+					message: "Data Inserted",
+					response: query,
+				});
+			}
+		}
+		else {
+			res.json({
+				error: true,
+				message: "Some Issue Occurs"
+			})
+		}
+	}
+	catch(error) {
+		res.json({
+			error: true,
+			message: error.message,
+		})
 	}
 })
 
