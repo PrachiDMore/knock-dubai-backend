@@ -199,7 +199,7 @@ app.delete("/delete/:_id", async (req, res) => {
 })
 
 // Add Locality
-app.post("/add-area", async(req, res) => {
+app.post("/addarea", async(req, res) => {
 	const data = req.body;
 	try {
 		const findArea = await localityModel.find({ 
