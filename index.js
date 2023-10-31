@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const bodyParser = require('body-parser')
 const dotenv = require('dotenv');
 dotenv.config();
 const BlogModel = require("./Schemas/Blog");
@@ -12,6 +13,10 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require('nodemailer');
 const ContactModel = require("./Schemas/Contact");
 const {localityModel} = require("./Schemas/Locality");
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
 
 app.use(cors({
 	origin: ["http://localhost:3000", "http://localhost:5500", 'https://knock-dubai-admin.vercel.app', "https://knock-dubai-frontend.vercel.app"]
@@ -321,28 +326,29 @@ app.post("/blogs-by-location", async(req, res) => {
 // Contact Us Form
 app.post("/contact-us", async(req, res) => {
 	const data = req.body;
+	console.log(req.body)
 	try {		
-		const transporter = nodemailer.createTransport({
-			service: 'Gmail',
-			auth: {
-			  user: process.env.ADMIN_EMAIL,
-			  pass: process.env.EMAIL_PASSWORD, 
-			},
-			authMethod: 'PLAIN',
-		});
+		// const transporter = nodemailer.createTransport({
+		// 	service: 'Gmail',
+		// 	auth: {
+		// 	  user: process.env.ADMIN_EMAIL,
+		// 	  pass: process.env.EMAIL_PASSWORD, 
+		// 	},
+		// 	authMethod: 'PLAIN',
+		// });
 	
-		// Composing Email
-		const mailOptions = {
-			from: process.env.ADMIN_EMAIL,
-			to: process.env.ADMIN_EMAIL,
-			subject: `Query related to ${ data.queryType }`,
-			text: data.message,
-		};
+		// // Composing Email
+		// const mailOptions = {
+		// 	from: process.env.ADMIN_EMAIL,
+		// 	to: process.env.ADMIN_EMAIL,
+		// 	subject: `Query related to ${ data.queryType }`,
+		// 	text: data.message,
+		// };
 
-		// Sending the email
-		const sendEmail = transporter.sendMail(mailOptions);
+		// // Sending the email
+		// const sendEmail = transporter.sendMail(mailOptions);
 
-		if(sendEmail) {
+		if(true) {
 			
 			const query = await ContactModel(data).save();
 			if(query) {
