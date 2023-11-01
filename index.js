@@ -242,7 +242,7 @@ app.post("/addarea", async(req, res) => {
 // get All Locality
 app.get("/get-locality", async(req, res) => {
 	try {
-		const getLocality = await localityModel.distinct('city');
+		const getLocality = await localityModel.find();
 
 		if(getLocality.length != 0) {
 			res.json({ 
@@ -269,9 +269,9 @@ app.get("/get-locality", async(req, res) => {
 // Fetch Blogs by Location
 app.post("/blogs-by-location", async(req, res) => {
 	try {
-		const getLocation = await localityModel.find({ city: req.body.city });
-		if(getLocation != 0) {
-			const getBlogs =  await BlogModel.find({ city: req.body.city });
+		const getLocation = await localityModel.findById({ _id: req.body.locationId });
+		if(getLocation) {
+			const getBlogs =  await BlogModel.find({ locationId: req.body.locationId });
 			if(getBlogs.length != 0) {
 				res.json({
 					error: false,
@@ -340,25 +340,27 @@ app.post("/contact-us", async(req, res) => {
 		};
 
 		// Sending the email
-		const sendEmail = transporter.sendMail(mailOptions);
-
-		if(sendEmail) {
-			
-			const query = await ContactModel(data).save();
-			if(query) {
-				res.json({
-					error: false,
-					message: "Data Inserted",
-					response: query,
-				});
+		transporter.sendMail(mailOptions, async (error, info) => {
+			if(error) {
+				console.error('Error Sending Email: ', error);
 			}
-		}
-		else {
-			res.json({
-				error: true,
-				message: "Some Issue Occurs"
-			})
-		}
+			else {
+				const query = await ContactModel(data).save();
+				if(query) {
+					res.json({
+						error: false,
+						message: "Data Inserted",
+						response: query,
+					});
+				}
+				else {
+					res.json({
+						error: true,
+						message: "Some Issue Occurs"
+					});
+				}
+			}
+		});
 	}
 	catch(error) {
 		res.json({

@@ -32,7 +32,7 @@ const BlogSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	city: {
+	locationId: {
 		type: String,		
 	}
 }, { timestamps: true })
