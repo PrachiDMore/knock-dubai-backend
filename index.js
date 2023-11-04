@@ -336,7 +336,11 @@ app.post("/contact-us", async(req, res) => {
 			from: process.env.ADMIN_EMAIL,
 			to: process.env.ADMIN_EMAIL,
 			subject: `Query related to ${ data.queryType }`,
-			text: data.message,
+			text:	`Name: ${data.name} \n
+					Email: ${data.email} \n
+					Phone No: ${data.phone_number} \n
+					Query: ${data.query} \n
+					Message: ${data.message} \n`,
 		};
 
 		// Sending the email
