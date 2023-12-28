@@ -14,7 +14,7 @@ const ContactModel = require("./Schemas/Contact");
 const {localityModel} = require("./Schemas/Locality");
 
 app.use(cors({
-	origin: ["http://localhost:3000", "http://localhost:5500", 'https://knock-dubai-admin.vercel.app', "https://knock-dubai-frontend.vercel.app"]
+	origin: ["http://localhost:3000", "http://localhost:5500", 'https://knock-dubai-admin.vercel.app', "https://knock-dubai-frontend.vercel.app", "https://knockdubai.ae"]
 }))
 
 
